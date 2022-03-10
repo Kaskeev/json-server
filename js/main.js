@@ -4,8 +4,10 @@ let carsList = $("#cars-list");
 let details = $(".details");
 let search = $("#search");
 let pagination = $("#pagination");
+let filtersPriceFromInp = $("#filter-price-form");
+let filtersPriceToInp = $("#filter-price-to");
 let page = 1;
-let limit = 1;
+let limit = 10;
 // model, price, video, image * 4
 let addFormModel = $("#add-form-model");
 let addFormPrice = $("#add-form-price");
@@ -45,7 +47,7 @@ let editFormSaveBtn = $("#edit-form-save-btn");
 addFormSaveBtn.on("click", async function () {
   let newCar = {
     model: addFormModel.val(),
-    price: addFormPrice.val(),
+    price: +addFormPrice.val(),
     video: addFormVideo.val(),
     image1: addFormImage1.val(),
     image2: addFormImage2.val(),
@@ -62,10 +64,12 @@ addFormSaveBtn.on("click", async function () {
   getCars();
   console.log(newCar);
 });
-
+// Параметры для фильтрации
+//  gte - greater the equal
+//  lte - less then equal
 async function getCars() {
   let data = await fetch(
-    `${API}?q=${search.val()}&_page=${page}&_limit${limit}`
+    `${API}?q=${search.val()}&_page=${page}&_limit${limit}&price_gte=${filtersPriceFromInp.val()}&price_lte=${filtersPriceToInp.val()}`
   ).then((res) => res.json());
   //   console.log(data);
   carsList.html("");
@@ -104,6 +108,10 @@ $("body").on("click", "#btn-next", function () {
   page += 1;
   getCars();
 });
+
+filtersPriceFromInp.on("input", getCars);
+filtersPriceToInp.on("input", getCars);
+
 getCars();
 search.on("input", getCars);
 
@@ -133,7 +141,7 @@ $("body").on("click", ".btn-edit", async function (e) {
 editFormSaveBtn.on("click", function () {
   let editedData = {
     model: editFormModel.val(),
-    price: editFormPrice.val(),
+    price: +editFormPrice.val(),
     video: editFormVideo.val(),
     image1: editFormImage1.val(),
     image2: editFormImage2.val(),
